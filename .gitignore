@@ -1,0 +1,15 @@
+# Add to .gitignore
+echo "*.csv" >> .gitignore
+echo "mnist_train.csv" >> .gitignore
+echo "mnist_test.csv" >> .gitignore
+
+# Remove from git tracking
+git rm --cached mnist_train.csv
+git rm --cached mnist_test.csv
+
+# Commit the changes
+git add .gitignore
+git commit -m "Remove large CSV files from tracking"
+
+# Push
+git push origin main
