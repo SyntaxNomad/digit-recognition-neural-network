@@ -16,13 +16,42 @@ def ReLU(Z):
 
 
 def visualize_predictions(X_dev, Y_dev, predictions, num_samples=8):
-    for i in range(num_samples):
-        plt.subplot(2, 4, i+1)
-        plt.imshow(X_dev[:, i].reshape(28, 28), cmap='gray')
-        plt.title(f'Actual: {Y_dev[i]}, Predicted: {predictions[i]}')
-        plt.axis('off')
-    plt.tight_layout()
-    plt.show()
+   for i in range(num_samples):
+       plt.subplot(2, 4, i+1)
+       plt.imshow(X_dev[:, i].reshape(28, 28), cmap='gray')
+       plt.title(f'Actual: {Y_dev[i]}, Predicted: {predictions[i]}')
+       plt.axis('off')
+   plt.tight_layout()
+   plt.show()
+   
+
+   matrix = np.zeros((10, 10))
+   
+   
+   for i in range(len(Y_dev)):
+       matrix[Y_dev[i], predictions[i]] += 1
+   
+   
+   plt.figure(figsize=(10, 8))
+   plt.imshow(matrix, cmap='Blues')
+   
+   
+   for i in range(10):
+       for j in range(10):
+           plt.text(j, i, int(matrix[i, j]), ha='center', va='center', 
+                   color='white' if matrix[i, j] > matrix.max()/2 else 'black')
+   
+ 
+   plt.xticks(range(10))
+   plt.yticks(range(10))
+   plt.xlabel('Predicted')
+   plt.ylabel('Actual')
+   plt.title('Confusion Matrix')
+   plt.colorbar()
+   plt.tight_layout()
+   plt.show()
+
+
     
 
 def softmax(Z):
@@ -76,34 +105,36 @@ def training(X, Y, epochs, learningrate,X_dev , Y_dev):
     for k in range(len(predictions_dev)):
         if predictions_dev[k] == actual_dev[k]:
             count+=1
-    
-    print(f"Final Dev Results:")
-    print("Total Test cases:       ", len(predictions_dev))
-    print(f"Correct Predictions   :{count}/{len(predictions_dev)}")
-  
-    print(f"Accuracy:              {(count/len(predictions_dev)) * 100:.2f}")
-    print("Sample Predictions:      ")
-    print(f"Predicted -> {predictions_dev[:10]}")
-    print(f"Actual -> {actual_dev[:10]}")
-    print("Confusion Matrix:")
-    print("Rows = Actual, Columns = Predicted")
-    print("   ", end="")
-    for i in range(10):
-        print(f"{i:3}", end="")
-    print()
 
-    for actual in range(10):  
-        print(f"{actual}: ", end="")
-        for predicted in range(10): 
+    visualize_predictions(X_dev, Y_dev, predictions_dev, num_samples=8)
+    
+    print(f"Final Dev Results:\n")
+    print("Total Test cases:       \n", len(predictions_dev))
+    print(f"Correct Predictions   :{count}/{len(predictions_dev)}\n")
+  
+    print(f"Accuracy:              {(count/len(predictions_dev)) * 100:.2f}\n")
+    print("Sample Predictions:      ")
+    # print(f"Predicted -> {predictions_dev[:10]}\n")
+    # print(f"Actual    -> {actual_dev[:10]}\n")
+    # print("Confusion Matrix:\n")
+    # print("Rows = Actual, Columns = Predicted/\n")
+    # print("   ", end="")
+    # for i in range(10):
+    #     print(f"{i:3}", end="")
+    # print()
+   
+    # for actual in range(10):  
+    #     print(f"{actual}: ", end="")
+    #     for predicted in range(10): 
             
             
-            count = 0
-            for k in range(len(predictions_dev)):
-                if actual_dev[k] == actual and predictions_dev[k] == predicted:
-                    count += 1
+    #         count = 0
+    #         for k in range(len(predictions_dev)):
+    #             if actual_dev[k] == actual and predictions_dev[k] == predicted:
+    #                 count += 1
             
-            print(f"{count:3}", end="")
-        print() 
+    #         print(f"{count:3}", end="")
+    #     print() 
     
     
     return W1, b1, W2, b2
@@ -135,15 +166,6 @@ def main():
     Y_dev_onehot = encoder.fit_transform(Y_dev.reshape(-1, 1)).T
     training(X_train, Y_train_onehot, epochs, learningrate,X_dev,Y_dev)
  
-    
-
-
-
-
-
-  
-
-    
 
 
 main()
