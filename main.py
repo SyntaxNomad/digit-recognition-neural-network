@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-import math 
 from sklearn.preprocessing import OneHotEncoder
 
 def initparams():
@@ -17,16 +16,11 @@ def ReLU(Z):
 
 
 def visualize_predictions(X_dev, Y_dev, predictions, num_samples=8):
-    fig, axes = plt.subplots(2, 4, figsize=(12, 6))
-    axes = axes.flatten()
-    
     for i in range(num_samples):
-        image = X_dev[:, i].reshape(28, 28)
-        
-        axes[i].imshow(image, cmap='gray')
-        axes[i].set_title(f'Actual: {Y_dev[i]}, Pred: {predictions[i]}')
-        axes[i].axis('off')
-    
+        plt.subplot(2, 4, i+1)
+        plt.imshow(X_dev[:, i].reshape(28, 28), cmap='gray')
+        plt.title(f'Actual: {Y_dev[i]}, Predicted: {predictions[i]}')
+        plt.axis('off')
     plt.tight_layout()
     plt.show()
     
@@ -78,11 +72,39 @@ def training(X, Y, epochs, learningrate,X_dev , Y_dev):
     Z1_dev, A1_dev, Z2_dev, A2_dev = forward_prop(W1, b1, W2, b2, X_dev)
     predictions_dev = np.argmax(A2_dev, axis=0)
     actual_dev = Y_dev
+    count=0
+    for k in range(len(predictions_dev)):
+        if predictions_dev[k] == actual_dev[k]:
+            count+=1
     
     print(f"Final Dev Results:")
-    print(f"Predicted: {predictions_dev[:10]}")
-    print(f"Actual:    {actual_dev[:10]}")
-    visualize_predictions(X_dev, Y_dev, predictions_dev)
+    print("Total Test cases:       ", len(predictions_dev))
+    print(f"Correct Predictions   :{count}/{len(predictions_dev)}")
+  
+    print(f"Accuracy:              {(count/len(predictions_dev)) * 100:.2f}")
+    print("Sample Predictions:      ")
+    print(f"Predicted -> {predictions_dev[:10]}")
+    print(f"Actual -> {actual_dev[:10]}")
+    print("Confusion Matrix:")
+    print("Rows = Actual, Columns = Predicted")
+    print("   ", end="")
+    for i in range(10):
+        print(f"{i:3}", end="")
+    print()
+
+    for actual in range(10):  
+        print(f"{actual}: ", end="")
+        for predicted in range(10): 
+            
+            
+            count = 0
+            for k in range(len(predictions_dev)):
+                if actual_dev[k] == actual and predictions_dev[k] == predicted:
+                    count += 1
+            
+            print(f"{count:3}", end="")
+        print() 
+    
     
     return W1, b1, W2, b2
 
@@ -111,17 +133,18 @@ def main():
 
     Y_train_onehot = encoder.fit_transform(Y_train.reshape(-1, 1)).T
     Y_dev_onehot = encoder.fit_transform(Y_dev.reshape(-1, 1)).T
+    training(X_train, Y_train_onehot, epochs, learningrate,X_dev,Y_dev)
+ 
+    
+
+
+
+
 
   
 
-    training(X_train, Y_train_onehot, epochs, learningrate,X_dev,Y_dev)
-
-        
-
-        
-
     
-    
+
 
 main()
   
